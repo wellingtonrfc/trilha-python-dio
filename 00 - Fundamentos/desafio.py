@@ -1,4 +1,4 @@
-def extrato(saldo:float,operacoes:int,extrato:str,limite:float) -> None:
+def exibir_extrato(saldo:float,operacoes:int,extrato:str,limite:float) -> None:
     print()
     print("================ EXTRATO ===============")
     print(extrato if extrato else "Ainda não foram realizadas movimentações.")
@@ -6,7 +6,7 @@ def extrato(saldo:float,operacoes:int,extrato:str,limite:float) -> None:
     print(f"Saldo:{'\033[1;32m' if saldo>0 else '\033[1;31m'} R$ {saldo:.2f}\033[0m")
     print("=========================================")
     return (saldo,operacoes,extrato)
-def deposito(saldo:float,operacoes:int,extrato:str,limite:float) -> float:
+def depositar(saldo:float,operacoes:int,extrato:str,limite:float) -> float:
     try:
         valor = float(input("Informe o valor do depósito: "))
     except ValueError:
@@ -17,7 +17,7 @@ def deposito(saldo:float,operacoes:int,extrato:str,limite:float) -> float:
         extrato += f"\033[1;32mDepósito: R$ {valor:.2f}\033[0m\n"
         print("\033[1;32mDepósito realizado com sucesso!\033[0m")
     return (saldo,operacoes,extrato)
-def saque(saldo:float,operacoes:int,extrato:str,limite:float) -> float:
+def sacar(saldo:float,operacoes:int,extrato:str,limite:float) -> float:
     if operacoes>=3:
         print("\033[1;31mOperação falhou! Número máximo de saques excedido.\033[0m")
     else:
@@ -43,36 +43,38 @@ def saque(saldo:float,operacoes:int,extrato:str,limite:float) -> float:
 operacoes = {
     "d": {
         "mensagem":"[d] \033[1;32mDepósito\033[0m",
-        "executar":deposito
+        "executar":depositar
     },
     "s": {
         "mensagem":"[s] \033[1;31mSaque\033[0m",
-        "executar":saque
+        "executar":sacar
     },
     "e": {
         "mensagem":"[e] \033[1;34mExtrato\033[0m",
-        "executar":extrato
+        "executar":exibir_extrato
     },
     "q": {
         "mensagem":"[q] Sair"
     }
 }
 
-saldo = 0
-limite = 500
-extrato = ""
-numero_saques = 0
-LIMITE_SAQUES = 3
 if __name__ == "__main__":
+    LIMITE_SAQUES = 3
+    LIMITE_SAQUE = 500
+    saldo = 0
+    extrato = ""
+    numero_saques = 0
     while True:
-        menu = f"==== MENU ====\n{'\n'.join([op['mensagem'] for op in operacoes.values()])}\n==============\nselecione uma opção: "
+        menu = f"================ MENU ================\n{'\n'.join([op['mensagem'] for op in operacoes.values()])}\n=> "
         try:
             opcao = input(menu)
             if opcao == "q":
                 print("Saindo...")
                 break
+            elif opcao=='':
+                print("\033[1;31mOperação inválida, por favor selecione novamente a operação desejada.\033[0m")
             else:
-                saldo,numero_saques, extrato = operacoes[opcao]['executar'](saldo,numero_saques,extrato,limite)
+                saldo, numero_saques, extrato = operacoes[opcao]['executar'](saldo,numero_saques,extrato,LIMITE_SAQUE)
         except KeyboardInterrupt:
             print("\nExecução cancelada.")
             break
